@@ -1,0 +1,10 @@
+openai~=1.68.2
+dotenv~=0.9.9
+python-dotenv~=1.0.1
+tqdm~=4.66.5
+numpy~=1.26.4
+pandas~=1.5.3
+scikit-learn~=1.5.1
+torch~=2.5.1
+transformers~=4.49.0.dev0
+vllm~=0.10.0

@@ -18,8 +18,6 @@ def logloss(y_true, y_pred):
     all_logloss = y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred)
     return -np.mean(all_logloss)
 
-
-
 class LengthControlledAlpacaEval:
     """
     Implementation of Length-Controlled AlpacaEval as described in the paper.
