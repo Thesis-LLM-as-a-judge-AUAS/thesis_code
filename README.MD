@@ -25,3 +25,12 @@ This repository contains a modular framework for evaluating large language model
 ## Overview
 
 The repository supports evaluation across three dimensions: position bias, verbosity bias, and computational cost. It integrates and extends recent bias-aware techniques into a cohesive evaluation stack for reliable LLM benchmarking.
+
+
+# TO DO
+
+- [ ] Fill the scripts to repeat the tests 
+- [ ] Merge notebooks
+- [ ] Add comments to the final analysis notebook + finish its layout
+- [ ] Revise gathered_data / datasets (double check)
+- [ ] Fill the README
