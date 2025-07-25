@@ -5,7 +5,7 @@ import pandas as pd
 import sklearn
 from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
 from sklearn.metrics import make_scorer
-from sklearn.model_selection import GroupKFold, KFold
+from sklearn.model_selection import KFold
 from sklearn.preprocessing import StandardScaler
 
 warnings.filterwarnings('ignore')
@@ -158,6 +158,7 @@ class LengthControlledAlpacaEval:
             # Combine features
             X = self._extract_features(model_data)
             y = model_data['preference'].values
+
             # Apply cross-validation to avoid overfitting
             custom_scorer = make_scorer(
                 logloss,
@@ -237,15 +238,16 @@ class LengthControlledAlpacaEval:
         """
         data = self._prepare_test_data(data)
         result = self._test_model_coefficients(data)
-        result.to_json(f'./fair-eval-test/alpaca-result-{name}.json', orient='records')
+        result.to_json(f'./cj-cs-test/alpaca-result-{name}.json', orient='records')
 
         print(f"Results for {name} are saved!")
 
+TEST_DATA_FOLDER = "./datasets/cj-cs-test"
 
 # Demonstration of the implementation
 if __name__ == "__main__":
     print("Download GPT-3.5 + Auto-J dataset...")
-    gpt_3_5_data = pd.read_json("./fair-eval-test/alpaca-auto-j.json")
+    gpt_3_5_data = pd.read_json(f"{TEST_DATA_FOLDER}/alpaca-auto-j.json")
 
     print("\nInitializing Length-Controlled AlpacaEval with GPT-3.5 + Auto-J...")
     lc_eval = LengthControlledAlpacaEval(l2_reg=0.01, cv_folds=5)
@@ -257,7 +259,7 @@ if __name__ == "__main__":
     lc_eval.test(gpt_3_5_data, name="gpt-3.5")
 
     print("Download GPT-4 + Auto-J dataset...")
-    gpt_4_data = pd.read_json("./fair-eval-test/alpaca-auto-j-gpt4.json")
+    gpt_4_data = pd.read_json(f"{TEST_DATA_FOLDER}/alpaca-auto-j-gpt4.json")
 
     print("\nInitializing Length-Controlled AlpacaEval with GPT-4 + Auto-J...")
     lc_eval_gpt4 = LengthControlledAlpacaEval(l2_reg=0.01, cv_folds=5)
@@ -269,7 +271,7 @@ if __name__ == "__main__":
     lc_eval_gpt4.test(gpt_4_data, name="gpt-4")
 
     print("Download GPT-3.5 + Judgelm dataset...")
-    gpt_35_judgelm_data = pd.read_json("./fair-eval-test/alpaca-judgelm.json")
+    gpt_35_judgelm_data = pd.read_json(f"{TEST_DATA_FOLDER}/alpaca-judgelm.json")
 
     print("\nInitializing Length-Controlled AlpacaEval with GPT-3.5 + JudgeLM...")
     lc_eval_gpt35_judgelm = LengthControlledAlpacaEval(l2_reg=0.01, cv_folds=5)
@@ -281,7 +283,7 @@ if __name__ == "__main__":
     lc_eval_gpt35_judgelm.test(gpt_35_judgelm_data, name="gpt-3-5-judgelm")
 
     print("Download GPT-4 + Judgelm dataset...")
-    gpt_4_judgelm_data = pd.read_json("./fair-eval-test/alpaca-judgelm-gpt4.json")
+    gpt_4_judgelm_data = pd.read_json(f"{TEST_DATA_FOLDER}/alpaca-judgelm-gpt4.json")
 
     print("\nInitializing Length-Controlled AlpacaEval with GPT-3.5 + JudgeLM...")
     lc_eval_gpt4_judgelm = LengthControlledAlpacaEval(l2_reg=0.01, cv_folds=5)
@@ -293,8 +295,8 @@ if __name__ == "__main__":
     lc_eval_gpt4_judgelm.test(gpt_4_judgelm_data, name="gpt-4-judgelm")
 
     print("Download Verbosity dataset...")
-    verbosity_data = pd.read_json("./fair-eval-test/final_verbs.json")
-    balanced = pd.read_json("./fair-eval-test/balanced.json")
+    verbosity_data = pd.read_json(f"{TEST_DATA_FOLDER}/final_verbs.json")
+    balanced = pd.read_json(f"{TEST_DATA_FOLDER}/balanced.json")
 
     print("\nInitializing Length-Controlled AlpacaEval with Verbosity...")
     lc_eval_verbosity_data = LengthControlledAlpacaEval(l2_reg=0.01, cv_folds=1)
