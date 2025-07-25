@@ -29,12 +29,6 @@ def build_params():
         default=None,
     )
     parser.add_argument(
-        "--prompt-type",
-        type=str,
-        choices=("vanilla", "cot", "icl"),
-        default="vanilla",
-    )
-    parser.add_argument(
         "--model-type",
         type=str,
         choices=("judgelm", "auto-j"),
