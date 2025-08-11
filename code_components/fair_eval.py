@@ -4,10 +4,11 @@ import os
 import time
 
 import openai
+from astropy.units import pixel_scale
 from dotenv import load_dotenv
 from tqdm import tqdm
 
-load_dotenv('.env.example')
+load_dotenv('.env')
 
 # Constants
 MAX_API_RETRY = 10000
@@ -21,6 +22,7 @@ parser.add_argument('-o', '--output', help='Output file (defaults to stdout)')
 parser.add_argument("-m", "--eval-model", default="gpt-3.5-turbo")
 parser.add_argument("-k", "--k", type=int, default=3)
 parser.add_argument("-b", "--bpc", type=int, default=1)
+parser.add_argument("-t", "--temperature", type=int, default=1)
 
 args = parser.parse_args()
 
@@ -60,16 +62,16 @@ def gen_prompt(question, first_answer, second_answer):
 
 
 # Query function
-def query_gpt(system_prompt, uer_prompt):
+def query_gpt(system_prompt, user_prompt):
     for retry_idx in range(MAX_API_RETRY):
         try:
             response = client.chat.completions.create(
                 model=args.eval_model,
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": uer_prompt},
+                    {"role": "user", "content": user_prompt},
                 ],
-                temperature=1,
+                temperature=args.temperature,
                 max_tokens=512,
                 n=args.k
             )
@@ -81,7 +83,7 @@ def query_gpt(system_prompt, uer_prompt):
             time.sleep(30)
         except Exception as e:
             print(f'error: {e}')
-    raise RuntimeError(f"Failed after {MAX_API_RETRY} retries.")
+    raise Exception(f"Failed after {MAX_API_RETRY} retries.")
 
 
 def process_and_calculate_cost_for_prompt(question, first_answer, second_answer):
@@ -100,7 +102,7 @@ def process_and_calculate_cost_for_prompt(question, first_answer, second_answer)
 
 
 # Number of retries
-N_RETRIES = 20
+N_RETRIES = 1
 
 
 def extract_scores(question, first_answer, second_answer):
@@ -265,6 +267,9 @@ if __name__ == "__main__":
 
         print(f'Evaluation results (The first model vs the second model):\n{judgement_results}')
         print(f'Evaluation cost: ${total_cost:.2f}.')
+
+    except Exception as e:
+        raise e
 
     finally:
         with open(f'./{time.time()}-reviews.json', 'w') as f:
