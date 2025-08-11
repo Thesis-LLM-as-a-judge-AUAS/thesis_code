@@ -29,7 +29,7 @@ The repository supports evaluation across three dimensions: position bias, verbo
 
 # TO DO
 
-- [x] Fill the scripts to repeat the tests 
+- [ ] Fill the scripts to repeat the tests 
 - [ ] Merge notebooks
 - [ ] Add comments to the final analysis notebook + finish its layout
 - [ ] Revise gathered_data / datasets (double check)
