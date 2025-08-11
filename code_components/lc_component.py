@@ -11,6 +11,8 @@ from sklearn.preprocessing import StandardScaler
 warnings.filterwarnings('ignore')
 sklearn.set_config(enable_metadata_routing=True)
 
+TEST_DATA_FOLDER = "./datasets/cj-cs-test"
+TEST_RESULT_DATA_FOLDER  = "./gathered_data/cj-cs-test-result"
 
 def logloss(y_true, y_pred):
     epsilon = 1e-15
@@ -183,7 +185,6 @@ class LengthControlledAlpacaEval:
                     solver='liblinear',
                 )
 
-            print(y)
             self.model.fit(X, y)
 
         print(f"Fitted models for {len(models)} models")
@@ -238,11 +239,9 @@ class LengthControlledAlpacaEval:
         """
         data = self._prepare_test_data(data)
         result = self._test_model_coefficients(data)
-        result.to_json(f'./cj-cs-test/alpaca-result-{name}.json', orient='records')
+        result.to_json(f'{TEST_RESULT_DATA_FOLDER}/alpaca-result-{name}.json', orient='records')
 
         print(f"Results for {name} are saved!")
-
-TEST_DATA_FOLDER = "./datasets/cj-cs-test"
 
 # Demonstration of the implementation
 if __name__ == "__main__":
@@ -295,7 +294,6 @@ if __name__ == "__main__":
     lc_eval_gpt4_judgelm.test(gpt_4_judgelm_data, name="gpt-4-judgelm")
 
     print("Download Verbosity dataset...")
-    verbosity_data = pd.read_json(f"{TEST_DATA_FOLDER}/final_verbs.json")
     balanced = pd.read_json(f"{TEST_DATA_FOLDER}/balanced.json")
 
     print("\nInitializing Length-Controlled AlpacaEval with Verbosity...")

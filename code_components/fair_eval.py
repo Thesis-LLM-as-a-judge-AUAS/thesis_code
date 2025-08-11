@@ -7,7 +7,7 @@ import openai
 from dotenv import load_dotenv
 from tqdm import tqdm
 
-load_dotenv('.env')
+load_dotenv('.env.example')
 
 # Constants
 MAX_API_RETRY = 10000
