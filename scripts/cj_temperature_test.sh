@@ -7,7 +7,7 @@ experiment_matrix=(
   "gpt35 vicuna gpt-4 1 3 0.1"
 )
 for i in $(seq 1 40); do
-  mkdir -p ./gathered_data/0_and_0.1_t_experiment/"${i}"
+  mkdir -p ./gathered_data/temperature_investigation_results/"${i}"
 
   for j in "${!experiment_matrix[@]}"; do
       row="${experiment_matrix[$j]}"
@@ -16,7 +16,7 @@ for i in $(seq 1 40); do
       python code_components/fair_eval.py \
           -q datasets/vicuna/sampled_data/temperature_investigation_sampled/questions.jsonl \
           -a datasets/vicuna/sampled_data/temperature_investigation_sampled/answer_"$m1".jsonl datasets/vicuna/sampled_data/temperature_investigation_sampled/answer_"$m2".jsonl \
-          -o gathered_data/0_and_0.1_t_experiment/"${i}"/"review_${m1}_${m2}_${eval_model}_mec${k}_bpc${bpc}.jsonl" \
+          -o gathered_data/temperature_investigation_results/"${i}"/"review_${m1}_${m2}_${eval_model}_mec${k}_bpc${bpc}.jsonl" \
           -m "$eval_model" \
           --bpc "$bpc" \
           -k "$k" \

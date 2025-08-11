@@ -12,7 +12,7 @@ warnings.filterwarnings('ignore')
 sklearn.set_config(enable_metadata_routing=True)
 
 TEST_DATA_FOLDER = "./datasets/cj-cs-test"
-TEST_RESULT_DATA_FOLDER  = "./gathered_data/cj-cs-test-result"
+TEST_RESULT_DATA_FOLDER  = "./gathered_data/cj_cs_test_result"
 
 def logloss(y_true, y_pred):
     epsilon = 1e-15
