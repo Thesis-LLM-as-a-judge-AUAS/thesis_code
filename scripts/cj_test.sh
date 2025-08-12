@@ -1,38 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
 export CUDA_VISIBLE_DEVICES=0
 
+# ============================================================
 # Baseline and MEC+BPC experiments configuration
+# Format: m1 m2 eval_model bpc k t
+# ============================================================
 experiment_matrix=(
-  "gpt35 vicuna gpt-3.5-turbo 0 1 0"
-  "gpt35 vicuna gpt-4 0 1 0"
-  "gpt35 vicuna gpt-3.5-turbo 1 3 1"
-  "gpt35 vicuna gpt-4 1 3 1"
+  "gpt35 vicuna gpt-3.5-turbo  0 1 0"
+  "gpt35 vicuna gpt-4          0 1 0"
+  "gpt35 vicuna gpt-3.5-turbo  1 3 1"
+  "gpt35 vicuna gpt-4          1 3 1"
 )
 
-# Baseline and MEC+BPC experiments run (each experiment is repeated 40 times)
+# ============================================================
+# Run baseline and MEC+BPC experiments (40 repetitions)
+# ============================================================
 for i in $(seq 1 40); do
-  mkdir -p ./gathered_data/baseline_mec_results/"${i}"
+  exp_dir="gathered_data/baseline_mec_results/${i}"
+  mkdir -p "$exp_dir"
 
-  for j in "${!experiment_matrix[@]}"; do
-      row="${experiment_matrix[$j]}"
-      read -r m1 m2 eval_model bpc k t <<< "$row"
+  for exp_config in "${!experiment_matrix[@]}"; do
+    read -r m1 m2 eval_model bpc k t <<< "${experiment_matrix[$exp_config]}"
 
-      python code_components/fair_eval.py \
-          -q datasets/cj_merged/sampled_data/temperature_investigation_sampled/questions.jsonl \
-          -a datasets/cj_merged/sampled_data/temperature_investigation_sampled/answer_"$m1".jsonl datasets/cj_merged/sampled_data/temperature_investigation_sampled/answer_"$m2".jsonl \
-          -o gathered_data/temperature_investigation_results/"${i}"/"review_${m1}_${m2}_${eval_model}_mec${k}_bpc${bpc}.jsonl" \
-          -m "$eval_model" \
-          --bpc "$bpc" \
-          -k "$k" \
-          -t "$t"
+    python code_components/fair_eval.py \
+      -q "datasets/vicuna/sampled_data/cj_sampled/questions/${exp_config}.jsonl" \
+      -a "datasets/vicuna/sampled_data/cj_sampled/answer_${m1}/${exp_config}.jsonl" \
+         "datasets/vicuna/sampled_data/cj_sampled/answer_${m2}/${exp_config}.jsonl" \
+      -o "${exp_dir}/review_${m1}_${m2}_${eval_model}_mec${k}_bpc${bpc}.jsonl" \
+      -m "$eval_model" \
+      --bpc "$bpc" \
+      -k "$k" \
+      -t "$t"
   done
 done
 
-MODEL_PATH=./models/autoj-13b
-BASE_MODEL_PATH=./models/Mistral-7B-v0.1
-MODEL_TYPE=auto-j
-
-DATA_TYPE=verbosity
-
+# ============================================================
+# Data types for CascadedEval
+# ============================================================
 data_types=(
   "vicuna"
   "vicuna-mec"
@@ -40,34 +46,58 @@ data_types=(
   "vicuna-mec-gpt4"
 )
 
+# ============================================================
+# Model configurations for CascadedEval
+# Format: model_path base_model_path model_type
+# ============================================================
+model_types=(
+  "../models/autoj-13b ../models/Mistral-7B-v0.1 auto-j"
+  "../models/autoj-13b ../models/Mistral-7B-v0.1 judgelm"
+)
 
-#python3 -u src/cal_reliability.py \
-#      --model-name-or-path $MODEL_PATH \
-#      --cali-model-name-or-path $BASE_MODEL_PATH \
-#      --model-type ${MODEL_TYPE} \
-#      --data-type ${DATA_TYPE} \
-#      --max-new-token 1024 \
-#      --logit-file "relia_scores/${MODEL_TYPE}/${DATA_TYPE}-logit.jsonl" \
-#      --output-file "relia_scores/${MODEL_TYPE}/${DATA_TYPE}-relia.json"
-#
-#
-#MODEL_TYPE="auto-j"
-#DATA_TYPE="cj_sampled_merged"
-#
-#for i in $(seq 1 47); do
-#  python3 -u src/cascaded_eval.py \
-#      --data-type $DATA_TYPE \
-#      --logit-file1 "relia_scores/${MODEL_TYPE}/${DATA_TYPE}/${i}-logit.jsonl" \
-#      --output-file1 "relia_scores/${MODEL_TYPE}/${DATA_TYPE}/${i}-relia.json" \
-#      --logit-file-gpt "outputs/expanded_review/review_gpt35_vicuna_gpt-4_mec3_bpc1/${i}_review_gpt35_vicuna_gpt-4_mec3_bpc1.jsonl" \
-#      --final-output-file "outputs/final-outputs/${DATA_TYPE}/${i}-${MODEL_TYPE}-${DATA_TYPE}-final.json"
-#done
+# ============================================================
+# Mapping: data_type -> baseline experiment configuration
+# ============================================================
+declare -A data_type_to_baseline
+data_type_to_baseline["vicuna"]="gpt35 vicuna gpt-3.5-turbo 0 1 0"
+data_type_to_baseline["vicuna-mec"]="gpt35 vicuna gpt-4 0 1 0"
+data_type_to_baseline["vicuna-gpt4"]="gpt35 vicuna gpt-3.5-turbo 1 3 1"
+data_type_to_baseline["vicuna-mec-gpt4"]="gpt35 vicuna gpt-4 1 3 1"
 
-#for i in $(seq 1 47); do
-#  python3 -u src/cascaded_eval.py \
-#      --data-type $DATA_TYPE \
-#      --logit-file1 "relia_scores/${MODEL_TYPE}/${DATA_TYPE}/${i}-logit.jsonl" \
-#      --output-file1 "relia_scores/${MODEL_TYPE}/${DATA_TYPE}/${i}-relia.json" \
-#      --logit-file-gpt "outputs/expanded_review/review_gpt35_vicuna_gpt-4_mec3_bpc1/${i}_review_gpt35_vicuna_gpt-4_mec3_bpc1.jsonl" \
-#      --final-output-file "outputs/final-outputs/${DATA_TYPE}/${i}-${MODEL_TYPE}-${DATA_TYPE}-final.json"
-#done
+# ============================================================
+# Iterate over all model configurations and data types
+# Extract judgments, calculate reliability, and run CascadedEval
+# ============================================================
+for model_type_config in "${model_types[@]}"; do
+  read -r model_path base_model_path model_type <<< "$model_type_config"
+
+  for data_type in "${data_types[@]}"; do
+    relia_scores_dir="gathered_data/cascaded-eval-results/relia_scores/${model_type}/${data_type}"
+    result_dir="gathered_data/cascaded-eval-results/final_results/${data_type}"
+
+    mkdir -p "$relia_scores_dir" "$result_dir"
+
+    for i in $(seq 1 40); do
+      # Calculate reliability score
+      python3 -u src/cal_reliability.py \
+        --model-name-or-path "$model_path" \
+        --cali-model-name-or-path "$base_model_path" \
+        --model-type "$model_type" \
+        --data-type "$data_type" \
+        --max-new-token 1024 \
+        --logit-file "${relia_scores_dir}/${i}-logit.jsonl" \
+        --output-file "${relia_scores_dir}/${i}-relia.json"
+
+      # Get baseline config for current data_type
+      read -r m1 m2 eval_model bpc k t <<< "${data_type_to_baseline[$data_type]}"
+
+      # Apply CascadedEval methodology
+      python3 -u src/cascaded_eval.py \
+        --data-type "$data_type" \
+        --logit-file1 "${relia_scores_dir}/${i}-logit.jsonl" \
+        --output-file1 "${relia_scores_dir}/${i}-relia.json" \
+        --logit-file-gpt "gathered_data/baseline_mec_results/${i}/review_${m1}_${m2}_${eval_model}_mec${k}_bpc${bpc}.jsonl" \
+        --final-output-file "${result_dir}/${i}-${model_type}-${data_type}-final.json"
+    done
+  done
+done
