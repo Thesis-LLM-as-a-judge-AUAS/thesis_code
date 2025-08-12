@@ -150,8 +150,8 @@ if __name__ == "__main__":
     # Construct prompts only for compatible model_type and data_type
     prompts = []
     for index, example in enumerate(dataset):
-        if args.model_type in ["judgelm", "auto-j"] and args.data_type in ["verbosity", "vicuna", "vicuna-mec",
-                                                                           "vicuna-gpt4", "vicuna-mec-gpt4"]:
+        if args.model_type in ["judgelm", "auto-j"] and args.data_type in ["verbosity", "cj_sampled_merged", "cj_sampled_merged-mec",
+                                                                           "cj_sampled_merged-gpt4", "cj_sampled_merged-mec-gpt4"]:
             example["rubric"] = "Please rate the helpfulness, relevance, accuracy, level of details of their responses."
             prompt = instruction.format(
                 question_body=example["question_body"],

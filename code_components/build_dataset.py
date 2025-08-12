@@ -8,10 +8,10 @@ def build_dataset(data_type, data_path="./data"):
 
     Only supports:
         - "verbosity"
-        - "vicuna"
-        - "vicuna-mec"
-        - "vicuna-gpt4"
-        - "vicuna-mec-gpt4"
+        - "cj_sampled_merged"
+        - "cj_sampled_merged-mec"
+        - "cj_sampled_merged-gpt4"
+        - "cj_sampled_merged-mec-gpt4"
 
     Parameters:
     - data_type (str): The type of dataset to load.
@@ -22,17 +22,17 @@ def build_dataset(data_type, data_path="./data"):
     """
 
     # Ensure only supported data types are used
-    assert data_type in ["verbosity", "vicuna", "vicuna-mec", "vicuna-gpt4", "vicuna-mec-gpt4"], \
+    assert data_type in ["w", "cj_sampled_merged", "cj_sampled_merged-mec", "cj_sampled_merged-gpt4", "cj_sampled_merged-mec-gpt4"], \
         f"Unsupported data_type: {data_type}"
 
     # Case 1: Handle all Vicuna-related datasets
-    if data_type in ['vicuna', 'vicuna-mec', 'vicuna-gpt4', 'vicuna-mec-gpt4']:
+    if data_type in ['cj_sampled_merged', 'cj_sampled_merged-mec', 'cj_sampled_merged-gpt4', 'cj_sampled_merged-mec-gpt4']:
         # Map each data_type to its corresponding JSON file path
         data_type_to_path = {
-            'vicuna': 'vicuna/vanilla-vicuna.json',
-            'vicuna-mec': 'vicuna/mec-bpc-vicuna.json',
-            'vicuna-gpt4': 'vicuna/vanilla-vicuna-gpt4.json',
-            'vicuna-mec-gpt4': 'vicuna/mec-bpc-vicuna-gpt4.json',
+            'cj_sampled_merged': 'cj_sampled_merged/vanilla-cj_sampled_merged.json',
+            'cj_sampled_merged-mec': 'cj_sampled_merged/mec-bpc-cj_sampled_merged.json',
+            'cj_sampled_merged-gpt4': 'cj_sampled_merged/vanilla-cj_sampled_merged-gpt4.json',
+            'cj_sampled_merged-mec-gpt4': 'cj_sampled_merged/mec-bpc-cj_sampled_merged-gpt4.json',
         }
 
         # Open the JSON file corresponding to the selected data_type

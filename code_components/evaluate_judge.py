@@ -12,7 +12,7 @@ def build_params():
         * "cot": chain-of-thought prompting
         * "icl": in-context learning
     - --model-type: Specifies the model evaluation type, e.g., "judgelm" or "auto-j".
-    - --data-type: Type of evaluation dataset (e.g., "verbosity", "vicuna", etc.).
+    - --data-type: Type of evaluation dataset (e.g., "verbosity", "cj_sampled_merged", etc.).
     - --data-path: Directory where input data is located. Defaults to "./data".
     - --max-new-token: Maximum number of tokens the model can generate. Default is 2048.
     - --temperature: Sampling temperature for generation. Lower values make output more deterministic.
@@ -37,7 +37,7 @@ def build_params():
     parser.add_argument(
         "--data-type",
         type=str,
-        choices=("verbosity", "vicuna", "vicuna-mec", "vicuna-gpt4", "vicuna-mec-gpt4"),
+        choices=("verbosity", "cj_sampled_merged", "cj_sampled_merged-mec", "cj_sampled_merged-gpt4", "cj_sampled_merged-mec-gpt4"),
         default=None,
     )
     parser.add_argument(
