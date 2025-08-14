@@ -37,7 +37,7 @@ def build_params():
     parser.add_argument(
         "--data-type",
         type=str,
-        choices=("verbosity", "cj_sampled_merged", "cj_sampled_merged-mec", "cj_sampled_merged-gpt4", "cj_sampled_merged-mec-gpt4"),
+        choices=("verbosity", 'vicuna', 'vicuna-mec', 'vicuna-gpt4', 'vicuna-mec-gpt4'),
         default=None,
     )
     parser.add_argument(
