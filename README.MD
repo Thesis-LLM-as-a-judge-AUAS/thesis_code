@@ -17,5 +17,6 @@ This repository contains a modular framework for evaluating large language model
 - [x] Fill the scripts to repeat the tests 
 - [ ] Fill sampling notebook
 - [ ] Add comments to the final analysis notebook + finish its layout
-- [ ] Revise gathered_data / datasets (double check)
+- [x] Revise gathered_data / datasets (double check)
 - [ ] Fill the README
+- [ ] Check data type paths in build_datasets.py
