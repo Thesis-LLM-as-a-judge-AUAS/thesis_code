@@ -2,7 +2,7 @@
 
 This repository contains the implementation and approbation of the approach introduced in the master project **"A Composite Methodology for Reducing Position and Length Biases in Cost-Effective LLM Evaluations"**.
 
-![Architecture]("./figures/architecture.png")
+![Architecture](./figures/architecture.png)
 
 ## Purpose
 
